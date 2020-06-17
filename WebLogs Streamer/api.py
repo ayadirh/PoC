@@ -10,10 +10,13 @@ app.config["DEBUG"] = True
 
 # Reading Events.csv from RetailRocket files
 filepath= r"C:/Users/ayadi/Downloads/events.csv"
+# Reading products.csv from Instacart files
 productslist = r"C:/Users/ayadi/Downloads/4931_7487_bundle_archive/products.csv"
+
 productread = pd.read_csv(productslist, usecols = ['product_id'], error_bad_lines = False)
 dataread = pd.read_csv(filepath, usecols = ['timestamp','visitorid','event','itemid', 'transactionid'], error_bad_lines = False)
 #print('--reading--', filepath, '| Empty:',dataread.empty)
+dataread = dataread.sort_values(['timestamp','visitorid']).reset_index(drop=True)
 uniqueItems = dataread.itemid.unique()
 product_id_list = productread['product_id'].tolist()
 
