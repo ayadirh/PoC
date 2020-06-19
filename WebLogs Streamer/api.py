@@ -1,19 +1,18 @@
 import flask
 import pandas as pd
-from flask import request, jsonify, stream_with_context, Response, render_template
-import time,datetime
-import math,json, random
-#from random import randrange, sample
+from flask import Response
+import time, os
+import random
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 # Reading Events.csv from RetailRocket files
-filepath= r"C:/Users/ayadi/Downloads/events.csv"
+filepath= os.environ['filepath_events']
 # Reading products.csv from Instacart files
-productslist = r"C:/Users/ayadi/Downloads/4931_7487_bundle_archive/products.csv"
+productslist = os.environ['filepath_products']
 #Reading orders.csv from Instacart files to get user_id
-orderslist = r"C:/Users/ayadi/Downloads/4931_7487_bundle_archive/orders.csv"
+orderslist = os.environ['filepath_orders']
 
 orderread = pd.read_csv(orderslist, usecols = ['user_id'], error_bad_lines = False)
 productread = pd.read_csv(productslist, usecols = ['product_id'], error_bad_lines = False)
@@ -39,12 +38,6 @@ for i in uniqueVisitors:
     mappedUser.append(random.choice(uniqueUsers))
 user_lookup_dictionary =  dict(zip(uniqueVisitors,mappedUser))
 
-#testing if none exists while mapping, False expected.
-print('####')
-print('1. None in MappedProduct?', None in mappedProduct)
-print('2. None in mappedUser?', None in mappedUser)
-print('####')
-
 def getData(index):
     dataread.at[index,'itemid'] = lookup_dictionary.get(dataread.iloc[[index]]['itemid'].item())
     dataread.at[index, 'visitorid'] = user_lookup_dictionary.get(dataread.iloc[[index]]['visitorid'].item())
@@ -66,4 +59,6 @@ def getWebLogs():
             count +=1
     return Response(generate(), mimetype='text/json')
 
+print('Stream running at http://127.0.0.1:5000/events')
 app.run()
+
